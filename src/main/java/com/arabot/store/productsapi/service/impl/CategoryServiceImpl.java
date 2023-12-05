@@ -10,6 +10,7 @@ import com.arabot.store.productsapi.model.SubCategory;
 import com.arabot.store.productsapi.repository.CategoryRepository;
 import com.arabot.store.productsapi.repository.SubCategoryRepository;
 import com.arabot.store.productsapi.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -73,6 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         } catch (Exception ex) {
 
+            log.error(ErrorMessage.CATEGORY_GET_ALL_ERROR, ex);
             throw new ProductException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.CATEGORY_GET_ALL_ERROR, ex.getMessage());
 
         }
@@ -90,6 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         } catch (Exception ex) {
 
+            log.error(ErrorMessage.SUBCATEGORY_ALREADY_EXITS, ex);  // Provide context for logging exceptions
             throw new ProductException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.SUBCATEGORY_ALREADY_EXITS, ex.getMessage());
 
         }

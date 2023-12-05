@@ -1,4 +1,5 @@
 package com.arabot.store.productsapi.service.impl;
+
 import com.arabot.store.productsapi.constants.ErrorMessage;
 import com.arabot.store.productsapi.dto.ProductRequest;
 import com.arabot.store.productsapi.exception.CategoryException;
@@ -39,21 +40,19 @@ public class ProductServiceImpl implements ProductService {
         try {
 
             productRequest.setId(UUID.randomUUID());
-
             categoryService.validateIfCategoryAndSubCategotyExits(productRequest.getProductCategory());
-
             Product product = mapper.map(productRequest, Product.class);
             productRepository.save(product);
             return productRequest;
 
+        } catch (CategoryException ex) {
+
+            log.error(ErrorMessage.ERROR_CREATING_PRODUCT, ex);
+            throw new ProductException(ex.getHttpStatus(), ex.getMessage(), "");
+
         } catch (Exception ex) {
 
-            if (ex instanceof CategoryException) {
-
-            throw new ProductException(((CategoryException) ex).getHttpStatus(), ex.getMessage(), "");
-
-            }
-
+            log.error(ErrorMessage.ERROR_CREATING_PRODUCT, ex);
             throw new ProductException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.CATEGORY_PERSISTENCE_ERROR, ex.getMessage());
 
         }
@@ -69,12 +68,12 @@ public class ProductServiceImpl implements ProductService {
             return productsFounded.map(products -> mapper.map(products, ProductRequest.class));
 
 
-
-
         } catch (Exception ex) {
 
+            log.error(ErrorMessage.CATEGORY_GET_ALL_ERROR, ex);
             throw new ProductException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.CATEGORY_PERSISTENCE_ERROR, ex.getMessage());
 
         }
     }
 }
+
