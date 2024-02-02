@@ -24,7 +24,6 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-
     private final CategoryService categoryService;
     private final ModelMapper mapper;
 

@@ -1,7 +1,5 @@
 package com.arabot.store.productsapi.repository;
 
-import com.arabot.store.productsapi.model.BaseCategory;
-import com.arabot.store.productsapi.model.Category;
 import com.arabot.store.productsapi.model.SubCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

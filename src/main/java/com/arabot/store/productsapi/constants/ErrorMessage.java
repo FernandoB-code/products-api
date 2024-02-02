@@ -6,9 +6,9 @@ public class ErrorMessage {
 
     public static final String CATEGORY_PERSISTENCE_ERROR = "An error occurred while persisting the category.";
 
-    public static final String CATEGORY_ALREADY_EXITS= "The category already exist.";
+    public static final String CATEGORY_ALREADY_EXISTS= "The category already exists.";
 
-    public static final String SUBCATEGORY_ALREADY_EXITS= "The subcategory already exist.";
+    public static final String SUBCATEGORY_ALREADY_EXISTS= "The subcategory already exists.";
 
     public static final String PRODUCT_GET_ALL_ERROR = "An error occurred while retrieving all products.";
 

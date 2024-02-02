@@ -38,10 +38,8 @@ public class CategoryServiceImpl implements CategoryService {
 
             Category category = mapper.map(categoryRequest, Category.class);
 
-            if (categoryRepository.findByName(category.getName()).isPresent()) {
-
-                throw new IllegalArgumentException(ErrorMessage.CATEGORY_ALREADY_EXITS);
-            }
+        categoryRepository.findByName(category.getName())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.CATEGORY_ALREADY_EXISTS));
 
             categoryRepository.save(category);
             return categoryRequest;
@@ -53,10 +51,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         SubCategory subCategory = mapper.map(categoryRequest, SubCategory.class);
 
-        if (subCategoryRepository.findByName(subCategory.getName()).isPresent()) {
-
-            throw new IllegalArgumentException(ErrorMessage.SUBCATEGORY_ALREADY_EXITS);
-        }
+        subCategoryRepository.findByName(subCategory.getName())
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.SUBCATEGORY_ALREADY_EXISTS));
 
         subCategoryRepository.save(subCategory);
         return categoryRequest;
@@ -93,8 +89,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         } catch (Exception ex) {
 
-            log.error(ErrorMessage.SUBCATEGORY_ALREADY_EXITS, ex);  // Provide context for logging exceptions
-            throw new ProductException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.SUBCATEGORY_ALREADY_EXITS, ex.getMessage());
+            log.error(ErrorMessage.SUBCATEGORY_ALREADY_EXISTS, ex);  // Provide context for logging exceptions
+            throw new ProductException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.SUBCATEGORY_ALREADY_EXISTS, ex.getMessage());
 
         }
 
