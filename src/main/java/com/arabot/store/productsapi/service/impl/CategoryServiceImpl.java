@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
@@ -27,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper mapper;
 
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository ,ModelMapper mapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository, ModelMapper mapper) {
         this.categoryRepository = categoryRepository;
         this.subCategoryRepository = subCategoryRepository;
         this.mapper = mapper;
@@ -36,13 +38,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryRequest createCategory(CategoryRequest categoryRequest) {
 
-            Category category = mapper.map(categoryRequest, Category.class);
+        Category category = mapper.map(categoryRequest, Category.class);
 
-        categoryRepository.findByName(category.getName())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.CATEGORY_ALREADY_EXISTS));
+        Optional<Category> existingCategory = categoryRepository.findByName(category.getName());
 
-            categoryRepository.save(category);
-            return categoryRequest;
+        if (existingCategory.isPresent()) {
+            throw new IllegalArgumentException(ErrorMessage.CATEGORY_ALREADY_EXISTS);
+        }
+
+        categoryRepository.save(category);
+        return categoryRequest;
 
     }
 
@@ -51,8 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
 
         SubCategory subCategory = mapper.map(categoryRequest, SubCategory.class);
 
-        subCategoryRepository.findByName(subCategory.getName())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.SUBCATEGORY_ALREADY_EXISTS));
+        Optional<Category> existingSubCategory = categoryRepository.findByName(subCategory.getName());
+
+        if (existingSubCategory.isPresent()) {
+            throw new IllegalArgumentException(ErrorMessage.SUBCATEGORY_ALREADY_EXISTS);
+        }
 
         subCategoryRepository.save(subCategory);
         return categoryRequest;
@@ -97,7 +105,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void validateIfCategoryAndSubCategotyExits (ProductCategory productCategory) {
+    public void validateIfCategoryAndSubCategotyExits(ProductCategory productCategory) {
 
         categoryRepository.findSingleCategoryByNameStrict(productCategory.getCategory())
                 .orElseThrow(() -> new CategoryException(HttpStatus.BAD_REQUEST, ErrorMessage.CATEGORY_NOT_FOUND_MESSAGE, ""));
