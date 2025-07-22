@@ -3,13 +3,13 @@ package com.arabot.store.productsapi.repository;
 import com.arabot.store.productsapi.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface ProductRepository extends MongoRepository<Product, UUID> {
+public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Page<Product> findAll(Pageable pageable);
 

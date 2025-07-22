@@ -17,11 +17,10 @@ public interface CategoryRepository extends JpaRepository <Category, Long> {
 
     Optional<Category> findByName(final String name);
 
-    @Query(value = "SELECT * FROM categories WHERE BINARY name = ?1 LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM categories WHERE name COLLATE \"C\" = ?1 LIMIT 1", nativeQuery = true)
     Optional<Category> findSingleCategoryByNameStrict(String name);
 
-    @Query(value = "SELECT * FROM subcategories WHERE BINARY name = ?1 LIMIT 1", nativeQuery = true)
-    Optional<Category> findSingleSubCategoryByNameStrict(String name);
+
 
     Page<Category> findAll(Pageable pageable);
 

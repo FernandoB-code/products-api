@@ -1,7 +1,7 @@
 package com.arabot.store.productsapi.service.impl;
 
 import com.arabot.store.productsapi.constants.ErrorMessage;
-import com.arabot.store.productsapi.dto.ProductRequest;
+import com.arabot.store.productsapi.dto.ProductDto;
 import com.arabot.store.productsapi.exception.CategoryException;
 import com.arabot.store.productsapi.exception.ProductException;
 import com.arabot.store.productsapi.model.Product;
@@ -10,14 +10,10 @@ import com.arabot.store.productsapi.service.CategoryService;
 import com.arabot.store.productsapi.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -27,22 +23,20 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
     private final ModelMapper mapper;
 
-    @Autowired
     public ProductServiceImpl(ProductRepository productRepository, CategoryService categoryService, ModelMapper mapper) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.mapper = mapper;
     }
 
-    public ProductRequest createProduct(ProductRequest productRequest) {
+    public ProductDto createProduct(ProductDto productDto) {
 
         try {
 
-            productRequest.setId(UUID.randomUUID());
-            categoryService.validateIfCategoryAndSubCategotyExits(productRequest.getProductCategory());
-            Product product = mapper.map(productRequest, Product.class);
+            categoryService.validateIfCategoryAndSubCategoryExits(productDto.getProductCategory());
+            Product product = mapper.map(productDto, Product.class);
             productRepository.save(product);
-            return productRequest;
+            return productDto;
 
         } catch (CategoryException ex) {
 
@@ -58,13 +52,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductRequest> getAllProducts(Pageable pageable) {
+    public Page<ProductDto> getAllProducts(Pageable pageable) {
 
         try {
 
             Page<Product> productsFounded = productRepository.findAll(pageable);
 
-            return productsFounded.map(products -> mapper.map(products, ProductRequest.class));
+            return productsFounded.map(products -> mapper.map(products, ProductDto.class));
 
 
         } catch (Exception ex) {

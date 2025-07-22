@@ -21,45 +21,54 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers,
             HttpStatusCode status, WebRequest request) {
 
+        String validationMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining(" - "));
 
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                    .map(objectError -> objectError.getField() + " " + objectError.getDefaultMessage())
-                    .collect(Collectors.joining(" - "));
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message("Validation Failed: " + validationMessage)
+                .build();
 
-            return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "", "Validation Failed: " + message));
-        }
+        return buildResponseEntity(apiError);
+    }
 
     @ExceptionHandler(ProductException.class)
-    protected ResponseEntity<Object> handleTransactionError(ProductException ex)
-    {
-        ApiError apiError = new ApiError(ex.getHttpStatus(), ex.getErrorCode(), ex.getMessage(), ex);
+    protected ResponseEntity<Object> handleProductException(ProductException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(ex.getHttpStatus())
+                .message(ex.getMessage())
+                .build();
 
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex)
-    {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "", ex.getMessage(), ex);
+    protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(ex.getMessage())
+                .build();
 
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<Object> handleInternalError(Exception ex)
-    {
-        return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "", ex.getMessage(), ex));
+    protected ResponseEntity<Object> handleInternalError(Exception ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message("An unexpected error occurred")
+                .build();
+
+        return buildResponseEntity(apiError);
     }
 
-    private ResponseEntity<Object> buildResponseEntity(ApiError apiError)
-    {
-        return new ResponseEntity<>(apiError, apiError.getStatus());
+    private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
-
 }

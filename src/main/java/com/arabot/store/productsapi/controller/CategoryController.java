@@ -15,37 +15,34 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class CategoryController {
 
-    @Autowired
-    CategoryService categoryService;
+    private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
 
     @PostMapping("/category/create")
-
-    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<Object> createCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
 
         return new ResponseEntity<>(categoryService.createCategory(categoryRequest), HttpStatus.OK);
-
     }
 
     @GetMapping("/category/getAll")
-    public ResponseEntity<?> getAllCategories(Pageable pageable) {
+    public ResponseEntity<Object> getAllCategories(Pageable pageable) {
 
         return new ResponseEntity<>(categoryService.getAllCategories(pageable), HttpStatus.OK);
-
     }
 
     @PostMapping("/subcategory/create")
-
-    public ResponseEntity<?> createSubcategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<Object> createSubcategory(@Valid @RequestBody CategoryRequest categoryRequest) {
 
         return new ResponseEntity<>(categoryService.createSubCategory(categoryRequest), HttpStatus.OK);
-
     }
 
     @GetMapping("/subcategory/getAll")
-    public ResponseEntity<?> getAllSubCategories(Pageable pageable) {
+    public ResponseEntity<Object> getAllSubCategories(Pageable pageable) {
 
         return new ResponseEntity<>(categoryService.getAllSubCategories(pageable), HttpStatus.OK);
-
     }
-
 }

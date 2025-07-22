@@ -1,13 +1,13 @@
 package com.arabot.store.productsapi.service;
 
-import com.arabot.store.productsapi.dto.ProductRequest;
+import com.arabot.store.productsapi.dto.ProductDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
 
-    ProductRequest createProduct(ProductRequest productRequest);
+    ProductDto createProduct(ProductDto productDto);
 
-    Page<ProductRequest> getAllProducts(Pageable pageable);
+    Page<ProductDto> getAllProducts(Pageable pageable);
 
-    }
+}

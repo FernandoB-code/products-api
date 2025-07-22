@@ -15,6 +15,6 @@ public interface CategoryService {
 
     Page<CategoryRequest> getAllSubCategories(Pageable pageable);
 
-    void validateIfCategoryAndSubCategotyExits (ProductCategory productCategory);
+    void validateIfCategoryAndSubCategoryExits(ProductCategory productCategory);
 
 }
