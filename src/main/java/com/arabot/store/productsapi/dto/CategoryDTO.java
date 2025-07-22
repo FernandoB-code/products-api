@@ -1,6 +1,5 @@
 package com.arabot.store.productsapi.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryRequest {
+public class CategoryDTO {
 
  @NotBlank
  public String name;

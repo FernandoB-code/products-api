@@ -1,20 +1,20 @@
 package com.arabot.store.productsapi.service;
 
 import com.arabot.store.productsapi.dto.ProductCategory;
-import com.arabot.store.productsapi.dto.CategoryRequest;
+import com.arabot.store.productsapi.dto.CategoryDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
 
-    CategoryRequest createCategory(CategoryRequest categoryRequest);
+    CategoryDTO createCategory(CategoryDTO categoryDTO);
 
-    CategoryRequest createSubCategory(CategoryRequest categoryRequest);
+    CategoryDTO createSubCategory(CategoryDTO categoryDTO);
 
-    Page<CategoryRequest> getAllCategories(Pageable pageable);
+    Page<CategoryDTO> getAllCategories(Pageable pageable);
 
-    Page<CategoryRequest> getAllSubCategories(Pageable pageable);
+    Page<CategoryDTO> getAllSubCategories(Pageable pageable);
 
-    void validateIfCategoryAndSubCategotyExits (ProductCategory productCategory);
+    void validateIfCategoryAndSubCategoryExits(ProductCategory productCategory);
 
 }

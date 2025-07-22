@@ -2,7 +2,7 @@ package com.arabot.store.productsapi.service.impl;
 
 import com.arabot.store.productsapi.constants.ErrorMessage;
 import com.arabot.store.productsapi.dto.ProductCategory;
-import com.arabot.store.productsapi.dto.CategoryRequest;
+import com.arabot.store.productsapi.dto.CategoryDTO;
 import com.arabot.store.productsapi.exception.CategoryException;
 import com.arabot.store.productsapi.exception.ProductException;
 import com.arabot.store.productsapi.model.Category;
@@ -27,46 +27,49 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper mapper;
 
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository ,ModelMapper mapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, SubCategoryRepository subCategoryRepository, ModelMapper mapper) {
         this.categoryRepository = categoryRepository;
         this.subCategoryRepository = subCategoryRepository;
         this.mapper = mapper;
     }
 
     @Override
-    public CategoryRequest createCategory(CategoryRequest categoryRequest) {
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
 
-            Category category = mapper.map(categoryRequest, Category.class);
+        Category category = mapper.map(categoryDTO, Category.class);
 
-        categoryRepository.findByName(category.getName())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.CATEGORY_ALREADY_EXISTS));
+        if (categoryRepository.findSingleCategoryByNameStrict(category.getName()).isPresent()) {
+            throw new IllegalArgumentException(ErrorMessage.CATEGORY_ALREADY_EXISTS);
+        }
 
-            categoryRepository.save(category);
-            return categoryRequest;
+        categoryRepository.save(category);
+        return categoryDTO;
 
     }
 
     @Override
-    public CategoryRequest createSubCategory(CategoryRequest categoryRequest) {
+    public CategoryDTO createSubCategory(CategoryDTO categoryDTO) {
 
-        SubCategory subCategory = mapper.map(categoryRequest, SubCategory.class);
+        SubCategory subCategory = mapper.map(categoryDTO, SubCategory.class);
 
-        subCategoryRepository.findByName(subCategory.getName())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.SUBCATEGORY_ALREADY_EXISTS));
+        if (subCategoryRepository.findSingleSubCategoryByNameStrict(subCategory.getName()).isPresent()) {
+
+            throw new IllegalArgumentException(ErrorMessage.SUBCATEGORY_ALREADY_EXISTS);
+        }
 
         subCategoryRepository.save(subCategory);
-        return categoryRequest;
+        return categoryDTO;
 
     }
 
     @Override
-    public Page<CategoryRequest> getAllCategories(Pageable pageable) {
+    public Page<CategoryDTO> getAllCategories(Pageable pageable) {
 
         try {
 
             Page<Category> categoriesFounded = categoryRepository.findAll(pageable);
 
-            return categoriesFounded.map(category -> mapper.map(category, CategoryRequest.class));
+            return categoriesFounded.map(category -> mapper.map(category, CategoryDTO.class));
 
 
         } catch (Exception ex) {
@@ -78,13 +81,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<CategoryRequest> getAllSubCategories(Pageable pageable) {
+    public Page<CategoryDTO> getAllSubCategories(Pageable pageable) {
 
         try {
 
             Page<SubCategory> subCategoriesFounded = subCategoryRepository.findAll(pageable);
 
-            return subCategoriesFounded.map(subCategory -> mapper.map(subCategory, CategoryRequest.class));
+            return subCategoriesFounded.map(subCategory -> mapper.map(subCategory, CategoryDTO.class));
 
 
         } catch (Exception ex) {
@@ -97,12 +100,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void validateIfCategoryAndSubCategotyExits (ProductCategory productCategory) {
+    public void validateIfCategoryAndSubCategoryExits(ProductCategory productCategory) {
 
         categoryRepository.findSingleCategoryByNameStrict(productCategory.getCategory())
                 .orElseThrow(() -> new CategoryException(HttpStatus.BAD_REQUEST, ErrorMessage.CATEGORY_NOT_FOUND_MESSAGE, ""));
 
-        categoryRepository.findSingleSubCategoryByNameStrict(productCategory.getSubCategory())
+        subCategoryRepository.findSingleSubCategoryByNameStrict(productCategory.getSubCategory())
                 .orElseThrow(() -> new CategoryException(HttpStatus.BAD_REQUEST, ErrorMessage.SUBCATEGORY_NOT_FOUND_MESSAGE, ""));
 
     }
